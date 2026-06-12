@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# Pre-commit hook: перегенерирует авто-индекс README из дерева courses/
+# и до-индексирует README.md в коммит. Так навигация всегда совпадает с
+# деревом каталогов без ручной дисциплины (см. README § Как это устроено).
+set -euo pipefail
+
+ROOT="$(git rev-parse --show-toplevel)"
+cd "$ROOT"
+
+if command -v mise >/dev/null 2>&1; then
+  mise exec -- python3 scripts/gen_index.py
+else
+  python3 scripts/gen_index.py
+fi
+
+git add README.md

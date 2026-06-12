@@ -1,0 +1,26 @@
+# Python / uv
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Окружения и секреты
+.env
+.env.*
+*.local
+
+# Узлы / сборки (на будущее, лениво)
+node_modules/
+dist/
+build/
+target/
+
+# ОС / редактор
+.DS_Store
+.idea/
+.vscode/
+*.swp
