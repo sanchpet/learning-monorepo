@@ -3,3 +3,9 @@
 # (изолированное окружение на проект — см. README § Конвенции).
 [tools]
 python = "3.14"
+
+# Активация git-hook при входе в каталог: не нужно вручную гонять
+# `git config core.hooksPath .githooks` на каждой новой машине.
+# Требует mise hooks (settings.experimental) — включено глобально в dotfiles.
+[hooks]
+enter = "git config core.hooksPath .githooks"
