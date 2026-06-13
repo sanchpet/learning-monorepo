@@ -1,0 +1,10 @@
+# Keep the build context lean: no local env, caches or secrets.
+.venv/
+__pycache__/
+*.pyc
+.env
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+tests/
+*.md

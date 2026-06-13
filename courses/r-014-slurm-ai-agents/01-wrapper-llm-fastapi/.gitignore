@@ -1,0 +1,10 @@
+# Secrets — never in git
+.env
+
+# Environments and caches
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/

@@ -1,0 +1,11 @@
+name: intent-llm-wrapper
+
+services:
+  wrapper:
+    build: .
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+    env_file:
+      - path: .env
+        required: false   # no .env yet -> don't fail; the key is needed in step 3
