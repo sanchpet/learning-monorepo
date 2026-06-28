@@ -5,10 +5,15 @@ a validated instance of that schema (structured output). Transport errors are
 mapped to a single `LLMClientError` so callers don't depend on OpenAI's exception
 classes.
 
-We use the *Responses API* (`client.responses.parse`) with `text_format=<Model>`:
-the SDK sends the model's JSON Schema, the provider is constrained to it, and
-`response.output_parsed` comes back already validated. `extra_body` asks OpenRouter
-to only route to providers that actually honor the structured-output parameters.
+We use the *Chat Completions API* (`client.chat.completions.parse`) with
+`response_format=<Model>`: the SDK sends the model's JSON Schema, the provider
+constrains decoding to it, and `choices[0].message.parsed` comes back already
+validated. Chat Completions is chosen over the newer Responses API on purpose —
+it is GA (not beta on OpenRouter) and universally spoken (OpenRouter, LiteLLM,
+Ollama, ...), so the provider stays a swappable detail behind this facade. We use
+no Responses-only feature (server-side state, hosted tools), so there is nothing
+to trade away. `extra_body` asks OpenRouter to only route to providers that
+actually honor the structured-output parameters.
 """
 
 import logging
@@ -40,14 +45,14 @@ class OpenRouterLLMClient:
         temperature: float = 0.0,
     ) -> StructuredResponseT:
         try:
-            response = await self._client.responses.parse(
+            completion = await self._client.chat.completions.parse(
                 model=self._model,
-                input=[
+                messages=[
                     {"role": "system", "content": system_prompt},
                     {"role": "user", "content": user_prompt},
                 ],
-                text_format=text_format,
-                max_output_tokens=max_output_tokens,
+                response_format=text_format,
+                max_tokens=max_output_tokens,
                 temperature=temperature,
                 extra_body={"provider": {"require_parameters": True}},
             )
@@ -58,7 +63,13 @@ class OpenRouterLLMClient:
             logger.warning("OpenRouter connection failed: %r", exc)
             raise LLMClientError("OpenRouter request failed") from exc
 
-        parsed = response.output_parsed
+        message = completion.choices[0].message
+        # The model can decline to answer (safety, prompt-extraction attempts) —
+        # that arrives as a refusal, not a parsed object. Treat it as a clean error.
+        if message.refusal:
+            raise LLMClientError(f"Model refused the request: {message.refusal}")
+
+        parsed = message.parsed
         if parsed is None:
             raise LLMClientError("OpenRouter returned an unparseable structured response")
 
