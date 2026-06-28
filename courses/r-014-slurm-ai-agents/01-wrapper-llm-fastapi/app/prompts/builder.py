@@ -16,7 +16,7 @@ from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader
 
-from app.schemas.intent import DialogMessage
+from app.schemas.intent import DialogMessage, IntentItem, PlannedAction
 
 _TEMPLATES_DIR = Path(__file__).parent / "templates"
 
@@ -34,3 +34,18 @@ def _env() -> Environment:
 def intent_analysis_prompt(query: str, history: list[DialogMessage]) -> str:
     template = _env().get_template("intent_analysis.j2")
     return template.render(query=query, history=history).strip()
+
+
+def response_generation_prompt(
+    query: str,
+    intents: list[IntentItem],
+    plan: list[PlannedAction],
+    needs_clarification: bool,
+) -> str:
+    template = _env().get_template("response_generation.j2")
+    return template.render(
+        query=query,
+        intents=intents,
+        plan=plan,
+        needs_clarification=needs_clarification,
+    ).strip()

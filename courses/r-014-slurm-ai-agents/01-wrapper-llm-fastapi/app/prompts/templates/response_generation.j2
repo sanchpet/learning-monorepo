@@ -1,0 +1,19 @@
+### User request
+
+{{ query }}
+
+### Detected intents (already classified — do not change)
+
+{% for item in intents %}
+- {{ item.intent.value }}{% if item.target %} (target: {{ item.target }}){% endif %}
+{% endfor %}
+
+### Dry-run plan (already built — show verbatim, do not invent)
+
+{% for action in plan %}
+- {{ action.intent.value }}: {{ action.command if action.command else "(no command)" }}
+{% endfor %}
+{% if needs_clarification %}
+
+A target is missing — ask the user to clarify which resource they mean.
+{% endif %}
