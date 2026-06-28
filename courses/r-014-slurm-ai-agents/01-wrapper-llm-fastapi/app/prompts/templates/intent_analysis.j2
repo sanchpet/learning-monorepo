@@ -1,0 +1,13 @@
+### Current user request
+
+{{ query }}
+
+### Dialogue history
+
+{% if history %}
+{% for message in history %}
+- {{ message.role }}: {{ message.content }}
+{% endfor %}
+{% else %}
+No previous messages.
+{% endif %}

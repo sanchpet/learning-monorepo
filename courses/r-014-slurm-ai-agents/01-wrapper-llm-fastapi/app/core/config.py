@@ -32,6 +32,10 @@ class Settings(BaseSettings):
     openrouter_base_url: AnyHttpUrl = Field(default="https://openrouter.ai/api/v1")
     openrouter_model: str = "openai/gpt-4o-mini"
 
+    # Optional OpenRouter attribution headers (shown on the OpenRouter dashboard).
+    openrouter_referer: str | None = None
+    openrouter_title: str | None = None
+
     request_timeout_seconds: float = 60.0
 
     @field_validator("openrouter_api_key")

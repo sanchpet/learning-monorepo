@@ -1,34 +1,45 @@
 """Application entry point.
 
-Step 2: read and validate settings at startup (fail-fast). If a required key is
-missing the app will not boot, instead of failing in the middle of a request.
+Step 3: wire the composition root (Container) into the app lifecycle and mount the
+classification API. The container is built once at startup and closed on shutdown
+(this is the "resource cleanup" the step-2 stub promised). A single exception
+handler turns transport failures from the LLM client into a clean 502.
 """
 
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse
 
+from app.api.routes import router as api_router
 from app.core.config import Settings, get_settings
+from app.core.container import Container
+from app.infra.llm.openrouter_client import LLMClientError
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncIterator[None]:
-    # Runs once at process startup. Calling get_settings() triggers validation:
-    # no key -> ValidationError -> uvicorn does not start.
+    # get_settings() triggers validation: no key -> ValidationError -> no boot.
     settings = get_settings()
-    app.state.settings = settings
+    app.state.container = Container.from_settings(settings)
     yield
-    # Resource cleanup on shutdown goes here (added in step 3).
+    await app.state.container.close()
 
 
 def create_app(settings: Settings | None = None) -> FastAPI:
     resolved = settings or get_settings()
     app = FastAPI(title=resolved.app_name, version=resolved.app_version, lifespan=lifespan)
+    app.include_router(api_router, prefix="/api/v1")
 
     @app.get("/health", tags=["system"])
     async def health() -> dict[str, str]:
         return {"status": "ok", "env": resolved.app_env}
+
+    @app.exception_handler(LLMClientError)
+    async def llm_error_handler(_request: Request, exc: LLMClientError) -> JSONResponse:
+        # Upstream (OpenRouter) failed -> 502 Bad Gateway, not a 500 on our side.
+        return JSONResponse(status_code=502, content={"detail": str(exc)})
 
     return app
 
