@@ -8,17 +8,22 @@
   </head>
   <body>
     <main>
-      <h1>Homelab chatops — intent classifier</h1>
-      <p class="hint">classify-only: ничего не исполняется, показывается dry-run план.</p>
+      <header>
+        <div>
+          <h1>Homelab chatops</h1>
+          <p class="hint">classify-only: модель отвечает, но ничего не исполняет.</p>
+        </div>
+        <label class="toggle"><input type="checkbox" id="debug" /> debug</label>
+      </header>
+      <div id="log"></div>
       <form id="form">
         <input
           id="query"
           autocomplete="off"
-          placeholder="напр. reconcile apps and tail ingress logs"
+          placeholder="напр. restart the postgres deployment and tail its logs"
         />
-        <button type="submit">Classify</button>
+        <button type="submit">Send</button>
       </form>
-      <div id="out"></div>
     </main>
     <script type="module" src="/src/main.ts"></script>
   </body>
