@@ -22,6 +22,7 @@ select = ["E", "F", "I", "B", "UP", "SIM", "RUF"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["."]
+markers = ["live: hits the real LLM (set RUN_LIVE=1; spends OpenRouter credits)"]
 
 [dependency-groups]
 dev = [
