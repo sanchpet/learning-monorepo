@@ -62,6 +62,23 @@ curl -X POST http://localhost:8000/api/v1/classify \
   -d '{"query": "reconcile the apps kustomization and tail ingress logs", "history": []}'
 ```
 
+## UI (`web/`) — TS SPA на Vite
+
+Фронт развязан с бэкендом (отдельный node-стек, свой `mise.toml`). В деве — два
+терминала; CORS обойдён dev-прокси Vite (`/api` → `:8000`), бэкенд не трогаем.
+
+```bash
+# терминал 1 — бэкенд
+uv run uvicorn app.main:app --reload
+
+# терминал 2 — фронт
+cd web && mise install && npm install && npm run dev
+# открой http://localhost:5173
+```
+
+TS-типы в `web/src/main.ts` — зеркало Pydantic-схем (`app/schemas/intent.py`).
+Прод-путь: `npm run build` → `dist/` раздаётся тем же FastAPI (один origin).
+
 ## Тесты (офлайн, без ключа)
 
 ```bash

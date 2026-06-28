@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Homelab Intent Classifier</title>
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <main>
+      <h1>Homelab chatops — intent classifier</h1>
+      <p class="hint">classify-only: ничего не исполняется, показывается dry-run план.</p>
+      <form id="form">
+        <input
+          id="query"
+          autocomplete="off"
+          placeholder="напр. reconcile apps and tail ingress logs"
+        />
+        <button type="submit">Classify</button>
+      </form>
+      <div id="out"></div>
+    </main>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

@@ -1,0 +1,110 @@
+:root {
+  color-scheme: dark;
+  --bg: #0f1115;
+  --card: #181b21;
+  --fg: #e6e6e6;
+  --muted: #9aa4b2;
+  --accent: #6ea8fe;
+  --err: #ff6b6b;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font: 15px/1.5 ui-sans-serif, system-ui, sans-serif;
+}
+
+main {
+  max-width: 760px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+h1 {
+  font-size: 1.3rem;
+}
+
+.hint {
+  color: var(--muted);
+  margin-top: -0.5rem;
+}
+
+form {
+  display: flex;
+  gap: 0.5rem;
+  margin: 1rem 0;
+}
+
+#query {
+  flex: 1;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid #2a2f3a;
+  border-radius: 8px;
+  background: var(--card);
+  color: var(--fg);
+}
+
+button {
+  padding: 0.6rem 1rem;
+  border: 0;
+  border-radius: 8px;
+  background: var(--accent);
+  color: #0b0d10;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid #232833;
+  border-radius: 10px;
+  padding: 0.8rem 1rem;
+  margin: 0.8rem 0;
+}
+
+.card.err {
+  border-color: var(--err);
+}
+
+.q {
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+}
+
+.card h3 {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  margin: 0.7rem 0 0.3rem;
+}
+
+code {
+  background: #0d1f17;
+  color: #7ee2b8;
+  padding: 0.05rem 0.35rem;
+  border-radius: 5px;
+}
+
+.conf {
+  color: var(--muted);
+  font-size: 0.85em;
+}
+
+.warn {
+  color: #ffd479;
+}
+
+ul {
+  margin: 0.2rem 0;
+  padding-left: 1.1rem;
+}
+
+small {
+  color: var(--muted);
+}
