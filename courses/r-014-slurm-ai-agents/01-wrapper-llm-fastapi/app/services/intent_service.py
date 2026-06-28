@@ -8,8 +8,12 @@ the stage-1 intents and the stage-2 plan (it does not reclassify or invent comma
 The service owns the sequence; it does not own transport (the LLM client) or the
 command rules (commands.py). That keeps each piece independently testable.
 
-Note: this costs TWO LLM calls per request (classify + respond). The reference
-lesson does the same — the price of a chat reply on top of structured classification.
+Note: this makes TWO LLM calls on EVERY request (classify + respond),
+unconditionally. The lesson reference was more frugal — its stage 2 was a policy
+that called the LLM again ONLY for free-text intents, using a tool or a fixed
+string otherwise. We accept the extra call as a conscious trade-off (simplicity
+over cost). Making stage 3 conditional — skip the call for `other` / pure actions,
+narrate the plan deterministically — is the obvious optimization if cost matters.
 """
 
 from app.infra.llm.openrouter_client import OpenRouterLLMClient
