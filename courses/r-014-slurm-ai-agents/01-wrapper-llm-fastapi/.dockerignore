@@ -8,3 +8,7 @@ __pycache__/
 .mypy_cache/
 tests/
 *.md
+
+# Web: rebuilt inside the image's web stage, never copied from host
+web/node_modules/
+web/dist/

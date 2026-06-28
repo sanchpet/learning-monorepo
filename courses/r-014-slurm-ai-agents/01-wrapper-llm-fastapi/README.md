@@ -64,20 +64,23 @@ curl -X POST http://localhost:8000/api/v1/classify \
 
 ## UI (`web/`) — TS SPA на Vite
 
-Фронт развязан с бэкендом (отдельный node-стек, свой `mise.toml`). В деве — два
-терминала; CORS обойдён dev-прокси Vite (`/api` → `:8000`), бэкенд не трогаем.
+Фронт развязан с бэкендом (отдельный node-стек, свой `mise.toml`). TS-типы в
+`web/src/main.ts` — зеркало Pydantic-схем (`app/schemas/intent.py`).
+
+**Режим 1 — контейнер (UI+API одним origin, рекомендуется для проверки):**
+multi-stage Dockerfile собирает SPA в node-стадии, FastAPI отдаёт `dist/` на `/`.
 
 ```bash
-# терминал 1 — бэкенд
-uv run uvicorn app.main:app --reload
-
-# терминал 2 — фронт
-cd web && mise install && npm install && npm run dev
-# открой http://localhost:5173
+docker compose up --build       # нужен .env с OPENROUTER_API_KEY
+# открой http://localhost:8000   ← и UI, и API на одном порту, CORS не нужен
 ```
 
-TS-типы в `web/src/main.ts` — зеркало Pydantic-схем (`app/schemas/intent.py`).
-Прод-путь: `npm run build` → `dist/` раздаётся тем же FastAPI (один origin).
+**Режим 2 — dev с hot-reload (две команды):** vite-сервер + dev-прокси `/api` → `:8000`.
+
+```bash
+uv run uvicorn app.main:app --reload          # терминал 1 — бэкенд
+cd web && mise install && npm install && npm run dev   # терминал 2 — http://localhost:5173
+```
 
 ## Тесты (офлайн, без ключа)
 

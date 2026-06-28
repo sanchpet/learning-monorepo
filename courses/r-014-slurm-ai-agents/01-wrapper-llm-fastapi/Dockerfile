@@ -1,4 +1,16 @@
 # syntax=docker/dockerfile:1.7
+
+# --- Web stage: build the TS SPA into static assets (dist/) ---
+FROM node:22-slim AS web-builder
+WORKDIR /web
+# Lockfile first -> the npm layer caches until deps change. `npm ci` is a
+# reproducible install straight from package-lock.json (errors if lock and
+# manifest disagree — the CI-grade counterpart of `uv sync --frozen`).
+COPY web/package.json web/package-lock.json ./
+RUN --mount=type=cache,target=/root/.npm npm ci
+COPY web/ ./
+RUN npm run build
+
 # --- Build stage: install deps into an isolated .venv from the lockfile ---
 FROM python:3.12-slim AS builder
 
@@ -37,6 +49,8 @@ RUN useradd --system --no-create-home --uid 10001 appuser
 WORKDIR /app
 COPY --from=builder /app/.venv /app/.venv
 COPY app ./app
+# Static SPA from the web stage; FastAPI serves it at "/" (see app/main.py).
+COPY --from=web-builder /web/dist ./web/dist
 
 USER appuser
 EXPOSE 8000

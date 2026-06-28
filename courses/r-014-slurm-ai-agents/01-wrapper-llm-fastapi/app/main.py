@@ -8,14 +8,19 @@ handler turns transport failures from the LLM client into a clean 502.
 
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
 
 from app.api.routes import router as api_router
 from app.core.config import Settings, get_settings
 from app.core.container import Container
 from app.infra.llm.openrouter_client import LLMClientError
+
+# Built SPA lives at <project>/web/dist. __file__ = app/main.py -> parents[1] = project root.
+_WEB_DIST = Path(__file__).resolve().parents[1] / "web" / "dist"
 
 
 @asynccontextmanager
@@ -40,6 +45,12 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     async def llm_error_handler(_request: Request, exc: LLMClientError) -> JSONResponse:
         # Upstream (OpenRouter) failed -> 502 Bad Gateway, not a 500 on our side.
         return JSONResponse(status_code=502, content={"detail": str(exc)})
+
+    # Serve the built SPA from the same origin as the API, when it exists.
+    # Mounted LAST so "/" cannot shadow /api/* and /health (routes added above win).
+    # Absent in pure dev (the vite dev server proxies instead) -> skip, no error.
+    if _WEB_DIST.is_dir():
+        app.mount("/", StaticFiles(directory=_WEB_DIST, html=True), name="web")
 
     return app
 
