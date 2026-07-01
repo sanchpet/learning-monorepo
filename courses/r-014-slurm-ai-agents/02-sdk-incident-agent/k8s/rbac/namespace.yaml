@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: incident-agent-sandbox
+  # Dedicated namespace = clean blast radius and one-command teardown
+  # (`kubectl delete ns incident-agent-sandbox` removes the SA with it).
+  # The ClusterRole grants read cluster-wide, but the *identity* is scoped here.

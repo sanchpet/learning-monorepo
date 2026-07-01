@@ -1,0 +1,14 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: incident-agent-readonly
+  # Binds the identity (SA) to the permission set (ClusterRole), cluster-wide.
+  # ClusterRoleBinding (not RoleBinding) = the read applies across ALL namespaces.
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: incident-agent-readonly
+subjects:
+  - kind: ServiceAccount
+    name: incident-agent
+    namespace: incident-agent-sandbox  # subject ns must be explicit in a CRB
