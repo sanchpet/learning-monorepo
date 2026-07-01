@@ -1,0 +1,30 @@
+[project]
+name = "k8s-incident-agent"
+version = "0.1.0"
+description = "Read-only Kubernetes incident agent on Claude Agent SDK (R-014, module 02, Hard)."
+requires-python = ">=3.12"
+# Stack is layered in step by step (lazy). Step 0 = env only; the SDK lands the
+# moment we write the first `connect` agent, extras (pyyaml/pydantic/litellm) later.
+dependencies = []
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "SIM", "RUF"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+# `live` = hits a real model / cluster (costs money or needs kubeconfig). Offline
+# handler tests stay unmarked so `pytest` is free and deterministic by default.
+markers = [
+    "live: hits the real model or cluster (set RUN_LIVE=1)",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+    "ruff>=0.8.0",
+]

@@ -72,4 +72,5 @@ git config core.hooksPath .githooks
 <!-- AUTO:INDEX -->
 - **`courses/r-014-slurm-ai-agents/`** — стек: python 3.12, uv latest
   - `01-wrapper-llm-fastapi/`
+  - `02-sdk-incident-agent/`
 <!-- /AUTO:INDEX -->
