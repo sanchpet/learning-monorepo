@@ -5,7 +5,9 @@ description = "Read-only Kubernetes incident agent on Claude Agent SDK (R-014, m
 requires-python = ">=3.12"
 # Stack is layered in step by step (lazy). Step 0 = env only; the SDK lands the
 # moment we write the first `connect` agent, extras (pyyaml/pydantic/litellm) later.
-dependencies = []
+dependencies = [
+    "claude-agent-sdk>=0.2.91",
+]
 
 [tool.ruff]
 line-length = 100
