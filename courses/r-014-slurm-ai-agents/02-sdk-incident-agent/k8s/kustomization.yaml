@@ -1,0 +1,8 @@
+---
+# Aggregates every cluster resource this app declares. Homelab's Flux Kustomization
+# points at this k8s/ root, so adding a resource here (NetworkPolicy, a test-pod
+# fixture, ...) flows into the cluster without touching homelab. Grows with the app.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - rbac
