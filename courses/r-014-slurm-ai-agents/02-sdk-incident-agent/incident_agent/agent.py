@@ -43,9 +43,16 @@ def _gateway_options(system_prompt: str) -> ClaudeAgentOptions:
             "ANTHROPIC_BASE_URL": os.environ.get("ANTHROPIC_BASE_URL", "http://localhost:4000"),
             "ANTHROPIC_API_KEY": master_key,  # the proxy's virtual key, not a real vendor key
             "ANTHROPIC_MODEL": "claude-sonnet",
+            # Cap output tokens: the CLI defaults to a huge max, and OpenRouter RESERVES
+            # credit by max_tokens → an oversized ask 402s ("can only afford N"). This is
+            # our balance-side analog of the course's Bedrock-limit cap.
+            "CLAUDE_CODE_MAX_OUTPUT_TOKENS": "1024",
         },
         max_turns=2,          # one reply needs one turn; 2 leaves slack
-        max_budget_usd=0.05,  # cheap smoke cap
+        # Budget reflects reality: the Claude Code CLI injects a large system prompt
+        # (~15k input tokens) per call, so even a "hello" costs ~$0.10-0.15. Not a
+        # per-token waste — it's the price of driving the full CLI as the runtime.
+        max_budget_usd=0.30,
     )
 
 
