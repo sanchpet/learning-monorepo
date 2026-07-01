@@ -1,0 +1,15 @@
+# env & secrets
+.venv/
+.env
+
+# python caches
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+
+# D3 structured-output artifact (regenerated per run)
+diagnosis.json
+
+# local kubeconfig for the read-only ServiceAccount (never commit credentials)
+kubeconfig-agent.yaml
