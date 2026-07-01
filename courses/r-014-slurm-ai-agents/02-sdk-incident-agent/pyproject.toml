@@ -7,6 +7,8 @@ requires-python = ">=3.12"
 # moment we write the first `connect` agent, extras (pyyaml/pydantic/litellm) later.
 dependencies = [
     "claude-agent-sdk>=0.2.91",
+    "litellm[proxy]>=1.90.2",
+    "python-dotenv>=1.2.2",
 ]
 
 [tool.ruff]

@@ -1,0 +1,37 @@
+# LiteLLM gateway → OpenRouter.
+#
+# The SDK speaks the Anthropic /v1/messages format; this proxy translates it to
+# OpenRouter and can fall back across providers — the AGENT CODE never changes, only
+# this file. That decoupling is the whole point of the gateway step.
+#
+# Run:   uv run litellm --config litellm/config.yaml --port 4000
+# Check: curl -s localhost:4000/v1/messages -H "x-api-key: $LITELLM_MASTER_KEY" \
+#          -H "anthropic-version: 2023-06-01" -H "content-type: application/json" \
+#          -d '{"model":"claude-sonnet","max_tokens":16,"messages":[{"role":"user","content":"ping"}]}'
+
+model_list:
+  # `claude-sonnet` is the name the SDK asks for (ANTHROPIC_MODEL). It maps to a REAL
+  # OpenRouter model here — swap the target without touching the agent.
+  - model_name: claude-sonnet
+    litellm_params:
+      # Pinned to a CURRENT model (real work ≠ course's 6-month-old pin). Confirm the
+      # exact slug at https://openrouter.ai/models before first run.
+      model: openrouter/anthropic/claude-sonnet-4.6
+      api_key: os.environ/OPENROUTER_API_KEY
+  # Cheap, DIFFERENT-vendor fallback — proves a vendor swap on failure with zero code change.
+  - model_name: cheap-fallback
+    litellm_params:
+      model: openrouter/z-ai/glm-4.6
+      api_key: os.environ/OPENROUTER_API_KEY
+
+router_settings:
+  fallbacks: [{"claude-sonnet": ["cheap-fallback"]}]   # primary → cheap on 429/5xx/error
+
+litellm_settings:
+  drop_params: true   # strip Anthropic-only params when falling back to a non-Anthropic model
+  num_retries: 2      # retries on a model before the fallback fires
+
+general_settings:
+  # Virtual key the SDK presents as ANTHROPIC_API_KEY. From env, NOT hardcoded — the
+  # course baked "sk-slurm-student-1234" into the file; we don't ship keys in a public repo.
+  master_key: os.environ/LITELLM_MASTER_KEY
