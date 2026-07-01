@@ -1,0 +1,20 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: incident-agent-readonly
+  # Cluster-scoped: the agent diagnoses pods in ANY namespace. Thin on purpose —
+  # we grow this Role verb-by-verb as the agent gains tools (least privilege as a
+  # moving target, patched when a new function actually needs it).
+rules:
+  # Core API group ("") — pods and events both live here.
+  - apiGroups: [""]
+    resources:
+      - pods    # `kubectl describe pod` / `get pod -o yaml`
+      - events  # `describe` lists the pod's events to explain the failure
+    verbs:
+      - get     # fetch one named object
+      - list    # describe lists events (field-selected) to render the summary
+    # NO `watch`: the agent is request/response, not a controller — even tighter
+    #   than the built-in `view` ClusterRole (which grants watch).
+    # NO `secrets` / no other resources: diagnosis never needs them.
+    # NO `pods/log` yet: added the moment we implement the logs follow-up (D2).
